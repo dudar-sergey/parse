@@ -1,0 +1,10 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+    {% for res in Result %}
+        {% for r in res %}
+            {{ r.text }}________{{ r.part }}
+            <br>
+        {% endfor %}
+    {% endfor %}
+
+{% endblock %}
