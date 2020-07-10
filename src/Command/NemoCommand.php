@@ -25,8 +25,6 @@ class NemoCommand extends Command
         $this->parse = $parse;
         $this->page = $page;
         $this->em = $em;
-        $em->createQueryBuilder()->delete()->from(Analogs::class, 'u')->getQuery()->execute();
-
         parent::__construct();
     }
 
@@ -42,7 +40,9 @@ class NemoCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        $products = $this->em->getRepository(Product::class)->findAll();
+        $count = $this->em->createQueryBuilder()->select('count(u)')->from(Product::class, 'u')->getQuery()->execute();
+        $step = 5;
+        $products = $this->em->getRepository(Product::class)->findBy(['handled'=>null]);
         $result = [];
         foreach ($products as $prod)
         {
@@ -59,6 +59,8 @@ class NemoCommand extends Command
                     $this->em->persist($product);
                     }
                 }
+            $prod->setHandled('true');
+            $this->em->persist($prod);
         }
         $this->em->flush();
 

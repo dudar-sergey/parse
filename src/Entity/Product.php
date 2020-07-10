@@ -46,6 +46,11 @@ class Product
      */
     private $img;
 
+    /**
+     * @ORM\Column(type="boolean", length=255, nullable=true)
+     */
+    private $handled;
+
 
     public function getId(): ?int
     {
@@ -120,6 +125,18 @@ class Product
     public function setImg($img): self
     {
         $this->img = $img;
+
+        return $this;
+    }
+
+    public function getHandled(): ?string
+    {
+        return $this->handled;
+    }
+
+    public function setHandled($handled): self
+    {
+        $this->handled = $handled;
 
         return $this;
     }

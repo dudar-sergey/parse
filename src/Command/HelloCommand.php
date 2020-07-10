@@ -13,6 +13,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use App\getPage\Page;
 use App\parse\Parse;
 use App\Entity\Product;
+use App\parse\csvEnc;
 
 class HelloCommand extends Command
 {
@@ -20,11 +21,13 @@ class HelloCommand extends Command
     private $page;
     private $parse;
     private $em;
-    public function __construct(Parse $parse, Page $page, EntityManagerInterface $em)
+    private $csv;
+    public function __construct(Parse $parse, Page $page, EntityManagerInterface $em, csvEnc $csv)
     {
         $this->parse = $parse;
         $this->page = $page;
         $this->em = $em;
+        $this->csv = $csv;
 
         $em->createQueryBuilder()->delete()->from(Product::class, 'u')->getQuery()->execute();
         parent::__construct();
@@ -53,6 +56,7 @@ class HelloCommand extends Command
             $gettingPage = $this->page->getPage(array('url'=>'https://shop.lonmadi.ru/product/search.html?ProductsSearch%5Bsearchstring%5D=&page='.$i));
             $Result[] = $this->parse->Parse($gettingPage);
         }
+
         foreach ($Result as $item)
         {
             foreach ($item as $pr)
@@ -69,6 +73,7 @@ class HelloCommand extends Command
 
         }
         $this->em->flush();
+        $this->csv->saveCSV();
         $io->success('Выполнено вроде без косяков');
 
         return 0;
