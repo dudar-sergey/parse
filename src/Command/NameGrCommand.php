@@ -2,8 +2,6 @@
 
 namespace App\Command;
 
-use App\Entity\Analogs;
-use App\Entity\Product;
 use App\getPage\Page;
 use App\parse\Parse;
 use Doctrine\ORM\EntityManagerInterface;
@@ -14,9 +12,9 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-class NemoCommand extends Command
+class NameGrCommand extends Command
 {
-    protected static $defaultName = 'Nemo';
+    protected static $defaultName = 'nameGr';
     private $page;
     private $parse;
     private $em;
@@ -40,33 +38,8 @@ class NemoCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        $step = 3;
-        $count = $step;
-        while($count == $step)
-        {
-            $products = $this->em->getRepository(Product::class)->findBy(['handled' => null],[],$step);
-            var_dump(count($products));
-            $count = count($products);
-            $result = [];
-            foreach ($products as $prod) {
-                $gettingPage = $this->page->getPage(['url' => 'https://shop.lonmadi.ru' . $prod->getUrl()]);
-                $item = $this->parse->secondParse($gettingPage, $prod->getId());
-
-                foreach ($item as $pr) {
-                    if ($prod->getPart() != $pr['part']) {
-                        $product = new Analogs();
-                        $product->setArtDet($prod->getPart().' '.$prod->getBrand());
-                        $product->setAnalog($pr['part'].' '.$pr['brand']);
-                        $this->em->persist($product);
-                    }
-                }
-                $prod->setHandled('true');
-                $this->em->persist($prod);
-            }
-            $this->em->flush();
-        }
-
-
+        $gettingPage = $this->page->getPage(['url'=>'https://shop.lonmadi.ru/']);
+        $this->parse->parseNameOfGr($gettingPage);
 
         $io->success('You have a new command! Now make it your own! Pass --help to see your options.');
 

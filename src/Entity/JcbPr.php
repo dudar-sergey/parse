@@ -2,13 +2,13 @@
 
 namespace App\Entity;
 
-use App\Repository\ProductRepository;
+use App\Repository\JcbPrRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass=ProductRepository::class)
+ * @ORM\Entity(repositoryClass=JcbPrRepository::class)
  */
-class Product
+class JcbPr
 {
     /**
      * @ORM\Id()
@@ -16,13 +16,9 @@ class Product
      * @ORM\Column(type="integer")
      */
     private $id;
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private $url;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="string", length=255)
      */
     private $text;
 
@@ -37,30 +33,34 @@ class Product
     private $part;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="string", length=255)
+     */
+    private $url;
+
+    /**
+     * @ORM\Column(type="string", length=255)
      */
     private $brand;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="string", length=255)
      */
     private $img;
 
     /**
-     * @ORM\Column(type="boolean", length=255, nullable=true)
+     * @ORM\Column(type="boolean")
      */
     private $handled;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="string", length=255)
      */
     private $gr;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="string", length=255)
      */
     private $subGr;
-
 
     public function getId(): ?int
     {
@@ -72,7 +72,7 @@ class Product
         return $this->text;
     }
 
-    public function setText(?string $text): self
+    public function setText(string $text): self
     {
         $this->text = $text;
 
@@ -108,7 +108,7 @@ class Product
         return $this->url;
     }
 
-    public function setUrl($url): self
+    public function setUrl(string $url): self
     {
         $this->url = $url;
 
@@ -120,7 +120,7 @@ class Product
         return $this->brand;
     }
 
-    public function setBrand($brand): self
+    public function setBrand(string $brand): self
     {
         $this->brand = $brand;
 
@@ -132,42 +132,43 @@ class Product
         return $this->img;
     }
 
-    public function setImg($img): self
+    public function setImg(string $img): self
     {
         $this->img = $img;
 
         return $this;
     }
 
-    public function getHandled(): ?string
+    public function getHandled(): ?bool
     {
         return $this->handled;
     }
 
-    public function setHandled($handled): self
+    public function setHandled(bool $handled): self
     {
         $this->handled = $handled;
 
         return $this;
     }
 
-    public function getGroup(): ?string
+    public function getGr(): ?string
     {
         return $this->gr;
     }
 
-    public function setGroup($gr): self
+    public function setGr(string $gr): self
     {
         $this->gr = $gr;
 
         return $this;
     }
+
     public function getSubGr(): ?string
     {
         return $this->subGr;
     }
 
-    public function setSubGr($subGr): self
+    public function setSubGr(string $subGr): self
     {
         $this->subGr = $subGr;
 

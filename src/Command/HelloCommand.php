@@ -73,7 +73,7 @@ class HelloCommand extends Command
 
         }
         $this->em->flush();
-        $this->csv->saveCSV();
+        //$this->csv->saveCSV();
         $io->success('Выполнено вроде без косяков');
 
         return 0;

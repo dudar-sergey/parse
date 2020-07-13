@@ -13,10 +13,11 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use App\Entity\Group;
 
-class NemoCommand extends Command
+class GrCommand extends Command
 {
-    protected static $defaultName = 'Nemo';
+    protected static $defaultName = 'gr';
     private $page;
     private $parse;
     private $em;
@@ -40,34 +41,20 @@ class NemoCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        $step = 3;
-        $count = $step;
-        while($count == $step)
+        $arg1 = $input->getArgument('arg1');
+        $grs = $this->em->getRepository(Group::class)->findAll();
+        foreach ($grs as $gr)
         {
-            $products = $this->em->getRepository(Product::class)->findBy(['handled' => null],[],$step);
-            var_dump(count($products));
-            $count = count($products);
-            $result = [];
-            foreach ($products as $prod) {
-                $gettingPage = $this->page->getPage(['url' => 'https://shop.lonmadi.ru' . $prod->getUrl()]);
-                $item = $this->parse->secondParse($gettingPage, $prod->getId());
+            $tmp = $this->page->getPage(['url'=>'https://shop.lonmadi.ru'.$gr->getUrl()]);
+            $lastPage = $this->parse->pageParse($tmp);
+            for($i=1;$i<$lastPage;$i++)
+            {
+                $Url = str_ireplace('.html', '/'.$i.'.html',$gr->getUrl());
+                $gettingPage = $this->page->getPage(['url' => 'https://shop.lonmadi.ru'.$Url]);
+                $item[] = $this->parse->parseGr($gettingPage, $gr->getMainGr(), $gr->getSubGr());
 
-                foreach ($item as $pr) {
-                    if ($prod->getPart() != $pr['part']) {
-                        $product = new Analogs();
-                        $product->setArtDet($prod->getPart().' '.$prod->getBrand());
-                        $product->setAnalog($pr['part'].' '.$pr['brand']);
-                        $this->em->persist($product);
-                    }
-                }
-                $prod->setHandled('true');
-                $this->em->persist($prod);
             }
-            $this->em->flush();
         }
-
-
-
         $io->success('You have a new command! Now make it your own! Pass --help to see your options.');
 
         return 0;
