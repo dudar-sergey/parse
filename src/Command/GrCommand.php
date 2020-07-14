@@ -42,7 +42,7 @@ class GrCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
         $arg1 = $input->getArgument('arg1');
-        $grs = $this->em->getRepository(Group::class)->findAll();
+        $grs = $this->em->getRepository(Group::class)->findBy(['handled'=>null]);
         foreach ($grs as $gr)
         {
             $tmp = $this->page->getPage(['url'=>'https://shop.lonmadi.ru'.$gr->getUrl()]);
@@ -52,8 +52,9 @@ class GrCommand extends Command
                 $Url = str_ireplace('.html', '/'.$i.'.html',$gr->getUrl());
                 $gettingPage = $this->page->getPage(['url' => 'https://shop.lonmadi.ru'.$Url]);
                 $item[] = $this->parse->parseGr($gettingPage, $gr->getMainGr(), $gr->getSubGr());
-
+                var_dump('Ok');
             }
+            $gr->setHandled(true);
         }
         $io->success('You have a new command! Now make it your own! Pass --help to see your options.');
 

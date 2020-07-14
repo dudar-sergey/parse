@@ -33,6 +33,11 @@ class Group
      */
     private $Url;
 
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $handled;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -70,6 +75,18 @@ class Group
     public function setUrl(string $Url): self
     {
         $this->Url = $Url;
+
+        return $this;
+    }
+
+    public function getHandled(): ?bool
+    {
+        return $this->handled;
+    }
+
+    public function setHandled(?bool $handled): self
+    {
+        $this->handled = $handled;
 
         return $this;
     }

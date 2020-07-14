@@ -19,12 +19,6 @@ class MainController extends AbstractController
     public function indexController(Page $page, Parse $parse, Request $request)
     {
         $forRender['title'] = 'title';
-        for($i=1;$i<=1;$i++)
-        {
-
-            $gettingPage = $page->getPage(array('url'=>'https://shop.lonmadi.ru/product/search.html?ProductsSearch%5Bsearchstring%5D=&page='.$i));
-            $forRender['Result'][] = $parse->Parse($gettingPage);
-        }
         /*$em = $this->getDoctrine()->getManager();
         foreach($forRender['Result'] as $prod)
         {

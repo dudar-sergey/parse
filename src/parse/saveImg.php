@@ -32,8 +32,8 @@ class saveImg
         $product->setImg(substr($this->savePath, 19, strlen($this->savePath)).$newUrl);
         $this->em->persist($product);
         $this->em->flush();
-        /*$fp = fopen($this->savePath.$newUrl, 'w');
+        $fp = fopen($this->savePath.$newUrl, 'w');
         fwrite($fp,$response->getContent());
-        fclose($fp);*/
+        fclose($fp);
     }
 }

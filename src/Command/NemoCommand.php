@@ -48,11 +48,12 @@ class NemoCommand extends Command
             var_dump(count($products));
             $count = count($products);
             $result = [];
-            foreach ($products as $prod) {
+            foreach ($products as $prod)
+            {
                 $gettingPage = $this->page->getPage(['url' => 'https://shop.lonmadi.ru' . $prod->getUrl()]);
                 $item = $this->parse->secondParse($gettingPage, $prod->getId());
 
-                foreach ($item as $pr) {
+               foreach ($item as $pr) {
                     if ($prod->getPart() != $pr['part']) {
                         $product = new Analogs();
                         $product->setArtDet($prod->getPart().' '.$prod->getBrand());
