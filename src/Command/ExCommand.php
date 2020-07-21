@@ -2,8 +2,7 @@
 
 namespace App\Command;
 
-use App\Entity\Analogs;
-use App\Entity\Product;
+use App\Entity\NameExGr;
 use App\getPage\Page;
 use App\parse\Parse;
 use Doctrine\ORM\EntityManagerInterface;
@@ -13,13 +12,12 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use App\Entity\Group;
 
-class GrCommand extends Command
+class ExCommand extends Command
 {
-    protected static $defaultName = 'gr';
-    private $page;
+    protected static $defaultName = 'ex';
     private $parse;
+    private $page;
     private $em;
     public function __construct(Parse $parse, Page $page, EntityManagerInterface $em)
     {
@@ -41,21 +39,23 @@ class GrCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        $arg1 = $input->getArgument('arg1');
-        $grs = $this->em->getRepository(Group::class)->findBy(['handled'=>null]);
-        foreach ($grs as $gr)
+        $mainUrl = 'https://msk.explorer-russia.ru';
+        $prod = $this->em->getRepository(NameExGr::class)->findBy(['handled'=>null]);
+        foreach ($prod as $pr)
         {
-            $tmp = $this->page->getPage(['url'=>'https://shop.lonmadi.ru'.$gr->getUrl()]);
-            $lastPage = $this->parse->pageParse($tmp);
-            for($i=1;$i<$lastPage;$i++)
+            $gettingPage = $this->page->getPage(['url' => $mainUrl.$pr->getUrl()]);
+            $countPage = $this->parse->pageParse($gettingPage);
+            for($i=0;$i<$countPage;$i++)
             {
-                $Url = str_ireplace('.html', '/'.$i.'.html',$gr->getUrl());
-                $gettingPage = $this->page->getPage(['url' => 'https://shop.lonmadi.ru'.$Url]);
-                $item[] = $this->parse->parseGr($gettingPage, $gr->getMainGr(), $gr->getSubGr());
+                $getPage = $this->page->getPage(['url'=>$mainUrl.$pr->getUrl().'?next='.$i*48]);
+                $this->parse->parseExPr($getPage, $pr->getGr(), $pr->getSubGr());
             }
-            $gr->setHandled(true);
+            $pr->setHandled(true);
+            $this->em->persist($pr);
+            $this->em->flush();
         }
-        $io->success('You have a new command! Now make it your own! Pass --help to see your options.');
+
+        $io->success('Okay');
 
         return 0;
     }

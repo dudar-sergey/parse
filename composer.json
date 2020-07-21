@@ -4,6 +4,7 @@
     "require": {
         "php": "^7.2.5",
         "ext-ctype": "*",
+        "ext-gd": "*",
         "ext-iconv": "*",
         "phpoffice/phpspreadsheet": "^1.14",
         "sensio/framework-extra-bundle": "^5.1",
@@ -32,7 +33,7 @@
         "symfony/validator": "5.1.*",
         "symfony/web-link": "5.1.*",
         "symfony/yaml": "5.1.*",
-      "ext-gd": "*"
+      "ext-json": "*"
     },
     "require-dev": {
         "symfony/debug-pack": "*",

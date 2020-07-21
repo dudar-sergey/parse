@@ -4,13 +4,16 @@
 namespace App\parse;
 require(__DIR__.'/../../lib/phpquery/phpQuery/phpQuery.php');
 
+use App\Entity\ExProduct;
 use App\Entity\Group;
 use App\Entity\JcbGr;
 use App\Entity\JcbPr;
+use App\Entity\NameExGr;
 use App\Entity\Product;
 use App\getPage\Page;
 use App\parse\saveImg;
 use Doctrine\ORM\EntityManagerInterface;
+use PhpParser\Node\Name;
 use Symfony\Component\Console\Helper\ProgressBar;
 
 
@@ -134,8 +137,15 @@ class Parse
     public function pageParse($page)
     {
         \phpQuery::newDocument($page);
-        $page = pq('.last')->find('.liPagerLink')->text();
-        return $page;
+        $page = pq('.pagination')->find('li');
+        $pag = [];
+        foreach ($page as $p)
+        {
+            $p = pq($p);
+            $pag[] =  $p->find('a')->text();
+        }
+
+        return $pag[11];
     }
    /* public function jcbGr($page)
     {
@@ -175,5 +185,75 @@ class Parse
         $prod = pq('#sku')->find('span')->text();
         $prod = explode(", ", trim($prod));
         return $prod;
+    }
+    public function parseExGr($page)
+    {
+        \phpQuery::newDocument($page);
+        pq('span')->remove();
+        $prod = pq('.item');
+        foreach($prod as $key=>$pr)
+        {   $pr = pq($pr);
+            $gr = trim($pr->find('img')->attr('alt'));
+            $sub = $pr->find('li');
+            foreach ($sub as $keu=>$sb)
+            {
+                $sb = pq($sb);
+                $sub_gr = trim($sb->find('a')->text());
+                $url = trim($sb->find('a')->attr('href'));
+                $name = new NameExGr();
+                $name->setGr($gr);
+                $name->setSubGr($sub_gr);
+                $name->setUrl($url);
+                $this->em->persist($name);
+            }
+        }
+        $this->em->flush();
+    }
+    public function parseExPr($page, $gr, $subGr)
+    {
+        \phpQuery::newDocument($page);
+        $prod = pq('.order_list');
+        foreach ($prod as $pr)
+        {
+            $pr = pq($pr);
+            $text = $pr->find('.order_list_title')->text();
+            $url = $pr->find('.order_list_title')->attr('href');
+            $price = $pr->find('b')->text();
+            $expr = new ExProduct();
+            $expr->setText($text);
+            $expr->setUrl($url);
+            $expr->setGr($gr);
+            $expr->setSubGr($subGr);
+            $expr->setPrice($price);
+            $this->em->persist($expr);
+        }
+        $this->em->flush();
+
+
+    }
+    public function parseExImg($page, $id)
+    {
+        $product = $this->em->getRepository(ExProduct::class)->find($id);
+        \phpQuery::newDocument($page);
+        pq('.stock_name')->remove();
+        $img = pq('li')->find('img')->attr('src');
+        preg_match('/.+\/((?:.+?)\.jpg)/', $img, $nameImg);
+        if($img)
+        {
+            $this->save->exSaveImg($nameImg[0], $nameImg[1]);
+            $product->setImg($nameImg[1]);
+        }
+        $char = pq('.characteristics')->find('dl');
+        $tmp = [];
+        foreach ($char as $c)
+        {
+            $c = pq($c);
+            $tmp[$c->find('dt')->text()] = trim($c->find('dd')->text());
+        }
+        $tech = json_encode($tmp);
+        $product->setTech($tmp);
+        $this->em->persist($product);
+        $this->em->flush();
+
     }
 }

@@ -2,8 +2,7 @@
 
 namespace App\Command;
 
-use App\Entity\Analogs;
-use App\Entity\Product;
+use App\Entity\ExProduct;
 use App\getPage\Page;
 use App\parse\Parse;
 use Doctrine\ORM\EntityManagerInterface;
@@ -13,13 +12,12 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use App\Entity\Group;
 
-class GrCommand extends Command
+class ExtechCommand extends Command
 {
-    protected static $defaultName = 'gr';
-    private $page;
+    protected static $defaultName = 'extech';
     private $parse;
+    private $page;
     private $em;
     public function __construct(Parse $parse, Page $page, EntityManagerInterface $em)
     {
@@ -41,20 +39,14 @@ class GrCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        $arg1 = $input->getArgument('arg1');
-        $grs = $this->em->getRepository(Group::class)->findBy(['handled'=>null]);
-        foreach ($grs as $gr)
+        $prod = $this->em->getRepository(ExProduct::class)->findBy(['handled'=>1]);
+        $mainUrl = 'https://msk.explorer-russia.ru';
+        foreach ($prod as $pr)
         {
-            $tmp = $this->page->getPage(['url'=>'https://shop.lonmadi.ru'.$gr->getUrl()]);
-            $lastPage = $this->parse->pageParse($tmp);
-            for($i=1;$i<$lastPage;$i++)
-            {
-                $Url = str_ireplace('.html', '/'.$i.'.html',$gr->getUrl());
-                $gettingPage = $this->page->getPage(['url' => 'https://shop.lonmadi.ru'.$Url]);
-                $item[] = $this->parse->parseGr($gettingPage, $gr->getMainGr(), $gr->getSubGr());
-            }
-            $gr->setHandled(true);
+            $gettingPage = $this->page->getPage(['url'=>$mainUrl.$pr->getUrl()]);
+            $this->parse->parseExImg($gettingPage, $pr->getId());
         }
+
         $io->success('You have a new command! Now make it your own! Pass --help to see your options.');
 
         return 0;

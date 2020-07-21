@@ -3,6 +3,7 @@
 
 namespace App\parse;
 use App\Entity\Product;
+use App\getPage\Page;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpClient\HttpClient;
 
@@ -11,8 +12,10 @@ class saveImg
 {
     private $savePath;
     private $em;
-    public function __construct(string $savePath, EntityManagerInterface $em)
+    private $page;
+    public function __construct(string $savePath, EntityManagerInterface $em, Page $page)
     {
+        $this->page = $page;
         $this->savePath = $savePath;
         $this->em = $em;
 
@@ -29,11 +32,18 @@ class saveImg
 
         ]);
         $product = $this->em->getRepository(Product::class)->find($id);
-        $product->setImg(substr($this->savePath, 19, strlen($this->savePath)).$newUrl);
+        $product->setImg('/data/img'.$newUrl);
         $this->em->persist($product);
         $this->em->flush();
-        $fp = fopen($this->savePath.$newUrl, 'w');
+        $fp = fopen('/data/img'.$newUrl, 'w');
         fwrite($fp,$response->getContent());
+        fclose($fp);
+    }
+    public function exSaveImg($imgUrl, $nameImg)
+    {
+        $content = $this->page->getPage(['url'=>'https://msk.explorer-russia.ru'.$imgUrl]);
+        $fp = fopen($this->savePath.'/'.$nameImg,'w');
+        fwrite($fp, $content);
         fclose($fp);
     }
 }
