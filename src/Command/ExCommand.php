@@ -40,19 +40,21 @@ class ExCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
         $mainUrl = 'https://msk.explorer-russia.ru';
-        $prod = $this->em->getRepository(NameExGr::class)->findBy(['handled'=>null]);
+        $prod = $this->em->getRepository(NameExGr::class)->findBy(['handled'=>1]);
         foreach ($prod as $pr)
         {
             $gettingPage = $this->page->getPage(['url' => $mainUrl.$pr->getUrl()]);
             $countPage = $this->parse->pageParse($gettingPage);
-            for($i=0;$i<$countPage;$i++)
+            var_dump($countPage);
+          /*  for($i=0;$i<$countPage;$i++)
             {
                 $getPage = $this->page->getPage(['url'=>$mainUrl.$pr->getUrl().'?next='.$i*48]);
                 $this->parse->parseExPr($getPage, $pr->getGr(), $pr->getSubGr());
+                var_dump('ok');
             }
             $pr->setHandled(true);
             $this->em->persist($pr);
-            $this->em->flush();
+            $this->em->flush();*/
         }
 
         $io->success('Okay');

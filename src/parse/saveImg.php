@@ -21,23 +21,13 @@ class saveImg
 
     }
 
-    public function saveImg($urlImg, $id)
+    public function saveImg($url, $nameImg)
     {
-        $client = HttpClient::create([
-            'http_version'=>'2.0',
-            'proxy'=>'http://smile80:U5w8BuB@188.165.156.203:65233',
-        ]);
-        $newUrl = substr($urlImg, 40, strlen($urlImg));
-        $response = $client->request('GET', $urlImg, [
-
-        ]);
-        $product = $this->em->getRepository(Product::class)->find($id);
-        $product->setImg('/data/img'.$newUrl);
-        $this->em->persist($product);
-        $this->em->flush();
-        $fp = fopen('/data/img'.$newUrl, 'w');
-        fwrite($fp,$response->getContent());
+        $content = $this->page->getPage(['url' => $url]);
+        $fp = fopen($this->savePath.'/'.$nameImg.'.jpg', 'w');
+        fwrite($fp, $content);
         fclose($fp);
+
     }
     public function exSaveImg($imgUrl, $nameImg)
     {

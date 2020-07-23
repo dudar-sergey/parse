@@ -10,6 +10,7 @@ use App\Entity\JcbGr;
 use App\Entity\JcbPr;
 use App\Entity\NameExGr;
 use App\Entity\Product;
+use App\Entity\Techno;
 use App\getPage\Page;
 use App\parse\saveImg;
 use Doctrine\ORM\EntityManagerInterface;
@@ -144,23 +145,17 @@ class Parse
             $p = pq($p);
             $pag[] =  $p->find('a')->text();
         }
-
-        return $pag[11];
-    }
-   /* public function jcbGr($page)
-    {
-        \phpQuery::newDocument($page);
-        $prod =pq('.collapsed');
-        foreach ($prod as $key=>$pr)
+        if($pag)
         {
-            $pr = pq($pr);
-            $group = new JcbGr();
-            $group->setGr($pr->find('.menu-level0')->text());
-            $group->setUrl($pr->find('.menu-level0')->attr('href'));
-            $this->em->persist($group);
+            return $pag[count($pag)-3];
         }
-        $this->em->flush();
-    }*/
+        else
+        {
+            return 0;
+        }
+
+
+    }
 
     public function jcbParse($page, $gr)
     {
@@ -255,5 +250,24 @@ class Parse
         $this->em->persist($product);
         $this->em->flush();
 
+    }
+    public function tecParse($page)
+    {
+        \phpQuery::newDocument($page);
+        $products = pq('.shop2-product-item');
+        foreach ($products as $prod)
+        {
+            $prod = pq($prod);
+            $title = $prod->find('.item-title')->text();
+            $url = $prod->find('.item-pic')->children()->attr('href');
+            $brand = $prod->find('.value')->eq(0)->text();
+            $obj = new Techno();
+            $obj->setTitle($title);
+            $obj->setBrand($brand);
+            $obj->setUrl($url);
+            $this->em->persist($obj);
+        }
+        $this->em->flush();
+        \phpQuery::unloadDocuments();
     }
 }
