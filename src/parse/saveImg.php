@@ -5,6 +5,7 @@ namespace App\parse;
 use App\Entity\Product;
 use App\getPage\Page;
 use Doctrine\ORM\EntityManagerInterface;
+use phpDocumentor\Reflection\Types\This;
 use Symfony\Component\HttpClient\HttpClient;
 
 
@@ -35,5 +36,13 @@ class saveImg
         $fp = fopen($this->savePath.'/'.$nameImg,'w');
         fwrite($fp, $content);
         fclose($fp);
+    }
+    public function saveTechno($url, $nameImg)
+    {
+        $content = $this->page->getPage(['url'=>'https://technobearing.ru'.$url]);
+        $fp = fopen($this->savePath.$nameImg, 'w');
+        fwrite($fp, $content);
+        fclose($fp);
+
     }
 }

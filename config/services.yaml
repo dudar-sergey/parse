@@ -28,7 +28,7 @@ services:
 
     App\parse\saveImg:
         arguments:
-            $savePath: '%kernel.project_dir%/storage/img'
+            $savePath: '/home/sergey/Documents/techno/'
 
     App\Command\CropCommand:
         arguments:

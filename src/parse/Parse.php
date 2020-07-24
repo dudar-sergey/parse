@@ -10,6 +10,7 @@ use App\Entity\JcbGr;
 use App\Entity\JcbPr;
 use App\Entity\NameExGr;
 use App\Entity\Product;
+use App\Entity\TecAnalog;
 use App\Entity\Techno;
 use App\getPage\Page;
 use App\parse\saveImg;
@@ -269,5 +270,45 @@ class Parse
         }
         $this->em->flush();
         \phpQuery::unloadDocuments();
+    }
+    public function tecAnal($page, $id, $brand)
+    {
+        $prod = $this->em->getRepository(Techno::class)->find($id);
+        \phpQuery::newDocument($page);
+        pq('.item-sm-param--head')->remove();
+        pq('.shop2-product-options')->find('tr')->eq(0)->remove();
+        pq('.shop2-product-options')->eq(1)->find('tr')->eq(0)->remove();
+        $urlImg = pq('.item-big-pic')->find('a')->eq(0)->attr('href');
+        preg_match('/.+\/((?:.+?)\.jpg)/', $urlImg, $nameImg);
+        $this->save->saveTechno($urlImg, $nameImg[1]);
+        $art = trim(pq('.article_str')->text());
+        $char = pq('.shop2-product-options')->eq(0)->find('tr');
+        $tmp = [];
+        foreach ($char as $c)
+        {
+            $c = pq($c);
+            $tmp[$c->find('td')->eq(0)->text()] = $c->find('td')->eq(1)->text();  // json харктеристики товара
+        }
+        $prod->setArt($art);
+        $prod->setTech($tmp);
+        $prod->setImg($nameImg[1]);
+        $this->em->persist($prod);
+        unset($tmp);
+
+        $an = pq('.shop2-product-options')->eq(1)->find('tr');
+        $tmpAn = [];
+        foreach ($an as $a)
+        {
+            $a = pq($a);
+            $obj = new TecAnalog();
+            $obj->setTecArt($art);
+            $obj->setTecBr($brand);
+            $obj->setAnalArt($a->find('td')->eq(1)->text());
+            $br = explode(' ', $a->find('td')->eq(0)->text());
+            $obj->setAnalBr($br[2]);
+            $this->em->persist($obj);
+        }
+        $this->em->flush();
+
     }
 }

@@ -35,7 +35,7 @@ class Techno
     /**
      * @ORM\Column(type="json", nullable=true)
      */
-    private $tech;
+    private $tech = [];
 
     /**
      * @ORM\Column(type="boolean", nullable=true)
@@ -93,12 +93,12 @@ class Techno
         return $this;
     }
 
-    public function getTech(): ?string
+    public function getTech(): ?array
     {
         return $this->tech;
     }
 
-    public function setTech(?string $tech): self
+    public function setTech(?array $tech): self
     {
         $this->tech = $tech;
 

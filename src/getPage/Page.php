@@ -20,9 +20,15 @@ class Page
             'verify_peer' => 'false'
         ]);
 
+        try {
             $response = $client->request('GET', $params['url'], []);
             return $response->getContent();
-
+        } catch (TransportExceptionInterface $e) {
+        } catch (ClientExceptionInterface $e) {
+        } catch (RedirectionExceptionInterface $e) {
+        } catch (ServerExceptionInterface $e) {
+        }
+        return 0;
     }
 
 
