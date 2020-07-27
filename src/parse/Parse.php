@@ -5,6 +5,8 @@ namespace App\parse;
 require(__DIR__.'/../../lib/phpquery/phpQuery/phpQuery.php');
 
 use App\Entity\ExProduct;
+use App\Entity\FestAnalogs;
+use App\Entity\FestProduct;
 use App\Entity\Group;
 use App\Entity\JcbGr;
 use App\Entity\JcbPr;
@@ -309,6 +311,38 @@ class Parse
             $this->em->persist($obj);
         }
         $this->em->flush();
+
+    }
+    public function festArt($page, $id, $brand)
+    {
+        $prod = $this->em->getRepository(FestProduct::class)->find($id);
+        \phpQuery::newDocument($page);
+        $res = pq('.js-store-prod-text')->text();
+        $fp = fopen('/home/sergey/output.txt', 'w');
+        preg_match('/Каталожный номер:(.+?)(;|[А-Яа-я])/', $res, $arts);
+        if($arts)
+        {
+            $arts[1] = str_ireplace(' ', '', $arts[1]);
+            $artArr = explode(',', $arts[1]);
+            $prod->setArt($artArr[0]);
+            if(count($artArr) > 1)
+            {
+                $mainArt = $artArr[0];
+                unset($artArr[0]);
+                foreach($artArr as $art)
+                {
+                    $pr = $this->em->getRepository(FestAnalogs::class)->findBy(['festArt'=>$mainArt, 'anArt'=>$art]);
+                    if(!$pr)
+                    {
+                        $obj = new FestAnalogs();
+                        $obj->setFestArt($mainArt);
+                        $obj->setFestBr($brand);
+                        $obj->setAnArt($art);
+                        $this->em->persist($obj);
+                    }
+                }
+            }
+        }
 
     }
 }

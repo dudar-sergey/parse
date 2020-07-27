@@ -62,6 +62,11 @@ class FestProduct
      */
     private $img;
 
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $handled;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -171,6 +176,18 @@ class FestProduct
     public function setImg(?string $img): self
     {
         $this->img = $img;
+
+        return $this;
+    }
+
+    public function getHandled(): ?bool
+    {
+        return $this->handled;
+    }
+
+    public function setHandled(?bool $handled): self
+    {
+        $this->handled = $handled;
 
         return $this;
     }

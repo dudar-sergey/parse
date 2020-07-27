@@ -44,13 +44,15 @@ class TestCommand extends Command
         $io = new SymfonyStyle($input, $output);
         $offset = $input->getArgument('arg1');
         $k = 1;
-        $count = 36;
-        while($count == 36)
+        $count = 100;
+        while($count == 100)
         {
-            $gettingPage = $this->page->getPage(['url'=>'https://store.tildacdn.com/api/getproductslist/?storepartuid=595297522760&recid=152075457&c=1595419063929&getparts=true&slice='.$k.'&size=36']);
+            $gettingPage = $this->page->getPage(['url'=>'https://store.tildacdn.com/api/getproductslist/?storepartuid=595297522760&recid=152075457&c=1595419063929&slice='.$k.'&size=100']);
             $res = json_decode($gettingPage, true);
             $count = count($res['products']);
-            foreach ($res['products'] as $product)
+            var_dump($count);
+            var_dump($k);
+           /* foreach ($res['products'] as $product)
             {
                 if($product['characteristics'])
                 {
@@ -86,7 +88,7 @@ class TestCommand extends Command
                 $fest->setTitle($title);
                 $this->em->persist($fest);
             }
-            $this->em->flush();
+            $this->em->flush();*/
             $k++;
         }
         $io->success('You have a new command! Now make it your own! Pass --help to see your options.');
