@@ -14,6 +14,8 @@ use App\Entity\NameExGr;
 use App\Entity\Product;
 use App\Entity\TecAnalog;
 use App\Entity\Techno;
+use App\Entity\TradGr;
+use App\Entity\TradProd;
 use App\getPage\Page;
 use App\parse\saveImg;
 use Doctrine\ORM\EntityManagerInterface;
@@ -344,5 +346,61 @@ class Parse
             }
         }
 
+    }
+
+
+    public function tradGr($page)
+    {
+        \phpQuery::newDocument($page);
+        $subMenu = pq('.sub-menu');
+        foreach ($subMenu as $menu)
+        {
+            $menu = pq($menu);
+            $grs = $menu->find('ul');
+            foreach ($grs as $men)
+            {
+                $men = pq($men);
+                $gr = $men->find('.ss_megamenu_lv3');
+                $mainGr = $men->find('.menuTitle')->text();
+                var_dump($mainGr);
+                foreach ($gr as $g)
+                {
+                    $g = pq($g);
+                    $subGr = $g->text();
+                    $url = $g->find('a')->attr('href');
+                    $obj = new TradGr();
+                    $obj->setGr($mainGr);
+                    $obj->setSubGr($subGr);
+                    $obj->setUrl($url);
+                    $this->em->persist($obj);
+                }
+            }
+        }
+        $this->em->flush();
+    }
+
+    public function pageTrad($page)
+    {
+        \phpQuery::newDocument($page);
+        $pages = pq('.widget-span')->eq(0)->text();
+        return $pages;
+    }
+
+
+    public function tradProd($page)
+    {
+        \phpQuery::newDocument($page);
+        $prods = pq('.car-grid');
+        foreach($prods as $prod)
+        {
+            $prod = pq($prod);
+            $url = $prod->find('a')->eq(0)->attr('href');
+            $text = $prod->find('a')->eq(0)->text();
+            $obj = new TradProd();
+            $obj->setUrl($url);
+            $obj->setText($text);
+            $this->em->persist($obj);
+        }
+        $this->em->flush();
     }
 }
