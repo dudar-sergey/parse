@@ -67,10 +67,16 @@ class FestProduct
      */
     private $handled;
 
+    /**
+     * @ORM\Column(type="json", nullable=true)
+     */
+    private $descNew = [];
+
     public function getId(): ?int
     {
         return $this->id;
     }
+
 
     public function getTitle(): ?string
     {
@@ -188,6 +194,18 @@ class FestProduct
     public function setHandled(?bool $handled): self
     {
         $this->handled = $handled;
+
+        return $this;
+    }
+
+    public function getDescNew(): ?array
+    {
+        return $this->descNew;
+    }
+
+    public function setDescNew(?array $descNew): self
+    {
+        $this->descNew = $descNew;
 
         return $this;
     }
