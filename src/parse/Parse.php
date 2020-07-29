@@ -403,4 +403,26 @@ class Parse
         }
         $this->em->flush();
     }
+    public function trad($page, $id)
+    {
+        $prod = $this->em->getRepository(TradProd::class)->find($id);
+        \phpQuery::newDocument($page);
+        $img = pq('.img-fluid')->eq(0)->attr('src');
+        $res = $this->em->getRepository(TradProd::class)->findBy(['img'=>$img]);
+        preg_match('/.+\/((?:.+?)\.jpg)/', $img, $nameImg);
+        if(!$res)
+        {
+            $this->save->saveTechno($img, $nameImg[1]);
+        }
+        $char = pq('.details-block')->find('ul > li');
+        $tmp = [];
+        foreach ($char as $c)
+        {
+            $c = pq($c);
+            $tmp[$c->find('span')->text()] = $c->find('.text-right')->text();
+        }
+        $prod->setTech($tmp);
+        $prod->setImg($nameImg[1]);
+        $this->em->persist($prod);
+    }
 }

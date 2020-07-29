@@ -39,7 +39,7 @@ class saveImg
     }
     public function saveTechno($url, $nameImg)
     {
-        $content = $this->page->getPage(['url'=>'https://technobearing.ru'.$url]);
+        $content = $this->page->getPage(['url'=>'https://www.tradicia-k.ru'.$url]);
         $fp = fopen($this->savePath.$nameImg, 'w');
         fwrite($fp, $content);
         fclose($fp);
